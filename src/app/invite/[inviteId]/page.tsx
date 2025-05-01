@@ -24,7 +24,13 @@ type Invite = {
 
 export default function JoinFamilyPage() {
   const params = useParams();
-  const inviteId = typeof params?.inviteId === 'string' ? params.inviteId : Array.isArray(params?.inviteId) ? params?.inviteId[0] : '';
+  const inviteId =
+    typeof params?.inviteId === 'string'
+      ? params.inviteId
+      : Array.isArray(params?.inviteId)
+      ? params.inviteId[0]
+      : '';
+
   const router = useRouter();
   const { user, loading } = useFirebaseUser();
 
@@ -41,12 +47,16 @@ export default function JoinFamilyPage() {
         const inviteSnap = await getDoc(inviteRef);
         if (inviteSnap.exists()) {
           const data = inviteSnap.data();
-          setInvite({
-            id: inviteSnap.id,
-            email: data.email,
-            familyId: data.familyId,
-            familyName: data.familyName,
-          });
+          if (data?.email && data?.familyId) {
+            setInvite({
+              id: inviteSnap.id,
+              email: data.email,
+              familyId: data.familyId,
+              familyName: data.familyName,
+            });
+          } else {
+            setError('This invite is missing required data.');
+          }
         } else {
           setError('Invite not found or already used.');
         }
@@ -81,7 +91,7 @@ export default function JoinFamilyPage() {
         familyId,
       });
 
-      await deleteDoc(doc(db, 'invites', inviteId));
+      await deleteDoc(doc(db, 'invites', invite.id));
 
       router.push('/dashboard');
     } catch (err) {

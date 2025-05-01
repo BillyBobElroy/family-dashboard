@@ -12,6 +12,7 @@ type AppUser = {
   email: string | null;
   displayName: string | null;
   familyId: string | null;
+  familyName?: string; // 👈 Add this line
 };
 
 export function useFirebaseUser() {
