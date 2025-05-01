@@ -41,7 +41,7 @@ export default function ListsPage() {
   const [loading, setLoading] = useState(true);
   const [newItemText, setNewItemText] = useState<{ [listId: string]: string }>({});
   const [expanded, setExpanded] = useState<{ [listId: string]: boolean }>({});
-  const [hideCompleted, setHideCompleted] = useState(false);
+  const [hideCompleted] = useState(false);
 
   const loadLists = useCallback(async () => {
     if (!user?.familyId) return;
