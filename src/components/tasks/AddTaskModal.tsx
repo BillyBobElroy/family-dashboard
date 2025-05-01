@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
 import { useFirebaseUser } from '@/hook/useFirebaseUser';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
-import { Editor } from '@tinymce/tinymce-react';
 import { nanoid } from 'nanoid';
 
 type Props = {
@@ -175,14 +174,14 @@ export function AddTaskModal({ onClose, onTaskAdded }: Props) {
         </div>
 
         <div>
-  <label className="block text-sm font-medium mb-1">Notes</label>
-  <textarea
-    value={notes}
-    onChange={(e) => setNotes(e.target.value)}
-    placeholder="Add any additional notes here..."
-    className="w-full border rounded px-3 py-2 min-h-[120px]"
-  />
-</div>
+          <label className="block text-sm font-medium mb-1">Notes</label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Add any additional notes here..."
+            className="w-full border rounded px-3 py-2 min-h-[120px]"
+          />
+        </div>
 
         <div className="space-y-2">
           <label className="block text-sm font-medium mb-1">Checklist</label>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -8,7 +8,7 @@ import { AddEventModal } from '@/components/calendar/AddEventModal';
 import { EditEventModal } from '@/components/calendar/EditEventModal';
 import { FamilyLegend } from '@/components/calendar/FamilyLegend';
 
-import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { format, parse, getDay } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 
 import { collection, getDocs } from 'firebase/firestore';
@@ -58,7 +58,7 @@ export default function FamilyCalendarPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
-  const loadEvents = async () => {
+  const loadEvents = useCallback(async () => {
     if (!user?.familyId) return;
 
     const membersSnap = await getDocs(collection(db, `families/${user.familyId}/members`));
@@ -96,7 +96,6 @@ export default function FamilyCalendarPage() {
 
     setEvents(rawEvents);
 
-    // Calculate daily progress
     const todayISO = new Date().toISOString().split('T')[0];
     const eventProgress: MemberProgress = {};
 
@@ -113,7 +112,7 @@ export default function FamilyCalendarPage() {
     }
 
     setProgress(eventProgress);
-  };
+  }, [user?.familyId]);
 
   const eventStyleGetter = (event: Event) => {
     const backgroundColor = event.color || '#3B82F6';
@@ -130,7 +129,7 @@ export default function FamilyCalendarPage() {
 
   useEffect(() => {
     loadEvents();
-  }, [user]);
+  }, [loadEvents]);
 
   return (
     <div className="min-h-screen bg-white p-4">
@@ -154,7 +153,6 @@ export default function FamilyCalendarPage() {
           eventPropGetter={eventStyleGetter}
         />
 
-        {/* Floating + Button */}
         <button
           onClick={() => setShowAddModal(true)}
           className="fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg text-3xl flex items-center justify-center hover:bg-blue-700 transition"
@@ -163,7 +161,6 @@ export default function FamilyCalendarPage() {
           +
         </button>
 
-        {/* Modals */}
         {showAddModal && (
           <AddEventModal
             onClose={() => setShowAddModal(false)}

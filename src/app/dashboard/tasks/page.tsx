@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useFirebaseUser } from '@/hook/useFirebaseUser';
@@ -57,7 +57,7 @@ export default function TaskDashboardPage() {
   const [hideCompleted, setHideCompleted] = useState(false);
   const [expandedNotes, setExpandedNotes] = useState<{ [taskId: string]: boolean }>({});
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!user?.familyId) return;
 
     const membersSnap = await getDocs(collection(db, `families/${user.familyId}/members`));
@@ -87,11 +87,11 @@ export default function TaskDashboardPage() {
       };
     }
     setProgress(progressMap);
-  };
+  }, [user?.familyId]);
 
   useEffect(() => {
     loadData();
-  }, [user]);
+  }, [loadData]);
 
   const toggleTaskComplete = async (task: Task) => {
     if (!user?.familyId) return;
@@ -194,12 +194,12 @@ export default function TaskDashboardPage() {
 
                       <div className="text-xs text-gray-600 flex justify-between items-center">
                         <span>
-                        {task.time && new Date(`1970-01-01T${task.time}`).toLocaleTimeString([], {
-                          hour: 'numeric',
-                          minute: '2-digit',
-                          hour12: true,
-                        })}
-                          {task.repeat && `• ${task.repeat}`}
+                          {task.time && new Date(`1970-01-01T${task.time}`).toLocaleTimeString([], {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true,
+                          })}
+                          {task.repeat && ` • ${task.repeat}`}
                         </span>
                         {overdue && (
                           <span className="text-red-500 font-medium">
@@ -217,14 +217,12 @@ export default function TaskDashboardPage() {
                         </span>
                       )}
 
-                      {/* Checklist Progress */}
                       {checklist.length > 0 && (
                         <p className="text-xs text-gray-500 mt-1">
                           ✅ {checkedCount}/{checklist.length} checklist items complete
                         </p>
                       )}
 
-                      {/* Collapsible Notes */}
                       {task.notes && (
                         <div className="text-xs text-gray-700 mt-1">
                           <button
@@ -254,7 +252,6 @@ export default function TaskDashboardPage() {
         })}
       </div>
 
-      {/* Floating Add Button */}
       <button
         onClick={() => setShowAddModal(true)}
         className="fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg text-3xl flex items-center justify-center hover:bg-blue-700 transition"

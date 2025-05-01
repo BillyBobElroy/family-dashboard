@@ -29,7 +29,7 @@ export function CreateFamilyForm() {
     try {
       setSubmitting(true);
       setError(null);
-      const familyId = await createFamily(trimmedName, user.uid, user.displayName);
+      await createFamily(trimmedName, user.uid, user.displayName);
       router.push('/dashboard');
     } catch (err) {
       console.error(err);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { db } from '@/lib/firebase';
 import { useFirebaseUser } from '@/hook/useFirebaseUser';
 import {
@@ -12,7 +12,7 @@ import {
 } from 'firebase/firestore';
 import { nanoid } from 'nanoid';
 import { CreateListModal } from '@/components/lists/CreateListModal';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 type ListItem = {
   id: string;
@@ -42,7 +42,7 @@ export default function ListsPage() {
   const [newItemText, setNewItemText] = useState<{ [listId: string]: string }>({});
   const [expanded, setExpanded] = useState<{ [listId: string]: boolean }>({});
 
-  const loadLists = async () => {
+  const loadLists = useCallback(async () => {
     if (!user?.familyId) return;
 
     const membersSnap = await getDocs(collection(db, `families/${user.familyId}/members`));
@@ -65,11 +65,11 @@ export default function ListsPage() {
 
     setLists(fetchedLists);
     setLoading(false);
-  };
+  }, [user?.familyId]);
 
   useEffect(() => {
     loadLists();
-  }, [user]);
+  }, [loadLists]);
 
   const saveListItems = async (listId: string, updatedItems: ListItem[]) => {
     if (!user?.familyId) return;
@@ -138,7 +138,7 @@ export default function ListsPage() {
     setLists(prev => prev.filter(list => list.id !== listId));
   };
 
-  const handleDragEnd = (result: any) => {
+  const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
     const reordered = Array.from(lists);
     const [moved] = reordered.splice(result.source.index, 1);
