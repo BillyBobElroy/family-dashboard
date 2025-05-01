@@ -1,11 +1,30 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function HomePage() {
   return (
     <main className="bg-white text-gray-800">
+      {/* Navbar */}
+      <header className="flex items-center justify-between px-6 py-4 bg-white shadow sticky top-0 z-40">
+        <div className="text-xl font-bold text-blue-600">FamilyDashboard</div>
+        <div className="space-x-4">
+          <Link
+            href="/auth/signin"
+            className="text-sm font-medium text-gray-700 hover:text-blue-600"
+          >
+            Log In
+          </Link>
+          <Link
+            href="/auth/signup"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium"
+          >
+            Sign Up
+          </Link>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-yellow-50 to-pink-50 py-20 px-6 text-center">
         <h1 className="text-4xl sm:text-5xl font-bold mb-4">
@@ -16,7 +35,7 @@ export default function HomePage() {
         </p>
         <div className="flex justify-center gap-4">
           <Link
-            href="/signup"
+            href="/auth/signup"
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
           >
             Get Started
@@ -35,24 +54,24 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {[
             {
-              title: "Shared Calendar",
-              desc: "Color-coded, family-friendly scheduling with automatic reminders.",
-              icon: "📅",
+              title: 'Shared Calendar',
+              desc: 'Color-coded, family-friendly scheduling with automatic reminders.',
+              icon: '📅',
             },
             {
-              title: "Chores & Tasks",
-              desc: "Assign, track, and complete daily responsibilities with ease.",
-              icon: "✅",
+              title: 'Chores & Tasks',
+              desc: 'Assign, track, and complete daily responsibilities with ease.',
+              icon: '✅',
             },
             {
-              title: "Smart Lists",
-              desc: "Groceries, packing, to-dos — all lists in one place.",
-              icon: "📝",
+              title: 'Smart Lists',
+              desc: 'Groceries, packing, to-dos — all lists in one place.',
+              icon: '📝',
             },
             {
-              title: "Profiles & Progress",
-              desc: "Each member gets their own color, avatar, and tracker.",
-              icon: "👤",
+              title: 'Profiles & Progress',
+              desc: 'Each member gets their own color, avatar, and tracker.',
+              icon: '👤',
             },
           ].map((f) => (
             <div
@@ -74,7 +93,7 @@ export default function HomePage() {
           A quick glance at what makes our dashboard powerful and simple.
         </p>
         <div className="max-w-5xl mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {["calendar.png", "tasks.png", "lists.png"].map((src, i) => (
+          {['calendar.png', 'tasks.png', 'lists.png'].map((src, i) => (
             <div key={i} className="bg-white rounded-xl shadow p-4">
               <Image
                 src={`/${src}`}
@@ -92,10 +111,10 @@ export default function HomePage() {
       <section className="py-16 px-6 bg-white">
         <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
           {[
-            { icon: "👨‍👩‍👧", label: "Family-first design" },
-            { icon: "⏰", label: "Daily progress" },
-            { icon: "🧹", label: "Reduce mental load" },
-            { icon: "🌈", label: "Fully personalized" },
+            { icon: '👨‍👩‍👧', label: 'Family-first design' },
+            { icon: '⏰', label: 'Daily progress' },
+            { icon: '🧹', label: 'Reduce mental load' },
+            { icon: '🌈', label: 'Fully personalized' },
           ].map((b) => (
             <div key={b.label}>
               <div className="text-3xl mb-2">{b.icon}</div>
@@ -110,7 +129,7 @@ export default function HomePage() {
         <h3 className="text-2xl font-bold mb-3">Free for families of 4 or fewer</h3>
         <p className="text-gray-700 mb-6">No credit card required. Upgrade anytime.</p>
         <Link
-          href="/signup"
+          href="/auth/signup"
           className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium"
         >
           Create Your Dashboard
