@@ -42,32 +42,32 @@ export default function ListsPage() {
   const [newItemText, setNewItemText] = useState<{ [listId: string]: string }>({});
   const [expanded, setExpanded] = useState<{ [listId: string]: boolean }>({});
 
-  useEffect(() => {
-    const loadLists = async () => {
-      if (!user?.familyId) return;
+  const loadLists = async () => {
+    if (!user?.familyId) return;
 
-      const membersSnap = await getDocs(collection(db, `families/${user.familyId}/members`));
-      const memberList: Member[] = membersSnap.docs.map(doc => ({
+    const membersSnap = await getDocs(collection(db, `families/${user.familyId}/members`));
+    const memberList: Member[] = membersSnap.docs.map(doc => ({
+      id: doc.id,
+      ...(doc.data() as Omit<Member, 'id'>),
+    }));
+    setMembers(memberList);
+
+    const listsSnap = await getDocs(collection(db, `families/${user.familyId}/lists`));
+    const fetchedLists: List[] = listsSnap.docs.map(doc => {
+      const data = doc.data();
+      return {
         id: doc.id,
-        ...(doc.data() as Omit<Member, 'id'>),
-      }));
-      setMembers(memberList);
+        title: data.title,
+        items: Array.isArray(data.items) ? data.items : [],
+        createdBy: data.createdBy || '',
+      };
+    });
 
-      const listsSnap = await getDocs(collection(db, `families/${user.familyId}/lists`));
-      const fetchedLists: List[] = listsSnap.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          title: data.title,
-          items: Array.isArray(data.items) ? data.items : [],
-          createdBy: data.createdBy || '',
-        };
-      });
+    setLists(fetchedLists);
+    setLoading(false);
+  };
 
-      setLists(fetchedLists);
-      setLoading(false);
-    };
-
+  useEffect(() => {
     loadLists();
   }, [user]);
 
@@ -322,29 +322,7 @@ export default function ListsPage() {
       )}
 
       {showModal && (
-        <CreateListModal
-          onClose={() => setShowModal(false)}
-          onListCreated={() => {
-            const loadLists = async () => {
-              if (!user?.familyId) return;
-
-              const listsSnap = await getDocs(collection(db, `families/${user.familyId}/lists`));
-              const fetchedLists: List[] = listsSnap.docs.map(doc => {
-                const data = doc.data();
-                return {
-                  id: doc.id,
-                  title: data.title,
-                  items: Array.isArray(data.items) ? data.items : [],
-                  createdBy: data.createdBy || '',
-                };
-              });
-
-              setLists(fetchedLists);
-            };
-
-            loadLists();
-          }}
-        />
+        <CreateListModal onClose={() => setShowModal(false)} onListCreated={loadLists} />
       )}
     </div>
   );

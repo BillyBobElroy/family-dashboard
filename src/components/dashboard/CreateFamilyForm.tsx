@@ -20,7 +20,8 @@ export function CreateFamilyForm() {
       return;
     }
 
-    if (!name.trim()) {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
       setError('Family name is required.');
       return;
     }
@@ -28,7 +29,7 @@ export function CreateFamilyForm() {
     try {
       setSubmitting(true);
       setError(null);
-      const familyId = await createFamily(name.trim(), user.uid, user.displayName);
+      const familyId = await createFamily(trimmedName, user.uid, user.displayName);
       router.push('/dashboard');
     } catch (err) {
       console.error(err);
@@ -38,29 +39,41 @@ export function CreateFamilyForm() {
     }
   };
 
-  // Show loading state while auth is being checked
   if (loading) {
-    return <p className="text-center">Checking user status…</p>;
+    return <p className="text-center text-gray-500 py-8">Checking user status…</p>;
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-sm mx-auto p-6 bg-white rounded-xl shadow">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 max-w-sm mx-auto p-6 bg-white rounded-xl shadow"
+    >
       <h2 className="text-lg font-bold">Create Your Family</h2>
 
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="e.g., Smith"
-        className="w-full border border-gray-300 rounded px-3 py-2"
-        disabled={submitting}
-      />
+      <div>
+        <label htmlFor="familyName" className="block text-sm font-medium mb-1">
+          Family Name
+        </label>
+        <input
+          id="familyName"
+          type="text"
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            if (error) setError(null);
+          }}
+          placeholder="e.g., Smith"
+          autoFocus
+          className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+          disabled={submitting}
+        />
+      </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
         disabled={submitting}
       >
         {submitting ? 'Creating…' : 'Create Family'}

@@ -65,46 +65,50 @@ export default function FamilyCalendarPage() {
     const memberMap: { [id: string]: string } = {};
     const memberList: Member[] = membersSnap.docs.map(doc => {
       const data = doc.data();
-      memberMap[doc.id] = data.color || '#3B82F6';
+      const color = data.color || '#3B82F6';
+      memberMap[doc.id] = color;
       return {
         id: doc.id,
         displayName: data.displayName || 'Unnamed',
-        color: data.color || '#3B82F6',
+        color,
       };
     });
     setMembers(memberList);
 
     const eventsSnap = await getDocs(collection(db, `families/${user.familyId}/events`));
-    const rawEvents = eventsSnap.docs.map(doc => {
+    const rawEvents: Event[] = eventsSnap.docs.map(doc => {
       const raw = doc.data();
-      const start = new Date(`${raw.date}T${raw.startTime || '00:00'}`);
-      const end = new Date(`${raw.date}T${raw.endTime || raw.startTime || '01:00'}`);
+      const date = raw.date || '';
+      const startTime = raw.startTime || '00:00';
+      const endTime = raw.endTime || raw.startTime || '01:00';
+
       return {
         id: doc.id,
-        title: raw.title,
-        start,
-        end,
+        title: raw.title || 'Untitled',
+        start: new Date(`${date}T${startTime}`),
+        end: new Date(`${date}T${endTime}`),
         location: raw.location,
         notes: raw.notes,
         createdBy: raw.createdBy,
         color: memberMap[raw.createdBy] || '#3B82F6',
-      } as Event;
+      };
     });
 
     setEvents(rawEvents);
 
-    // ✅ Build progress per member for today's events
-    const today = new Date().toLocaleDateString('en-CA'); // e.g., 2025-05-01
+    // Calculate daily progress
+    const todayISO = new Date().toISOString().split('T')[0];
     const eventProgress: MemberProgress = {};
+
     for (const member of memberList) {
-      const memberEvents = rawEvents.filter(event => {
-        const eventDate = event.start.toLocaleDateString('en-CA');
-        return event.createdBy === member.id && eventDate === today;
-      });
+      const memberEventsToday = rawEvents.filter(event =>
+        event.createdBy === member.id &&
+        event.start.toISOString().startsWith(todayISO)
+      );
 
       eventProgress[member.id] = {
-        completed: memberEvents.length,
-        total: memberEvents.length,
+        completed: memberEventsToday.length,
+        total: memberEventsToday.length,
       };
     }
 
@@ -132,7 +136,6 @@ export default function FamilyCalendarPage() {
     <div className="min-h-screen bg-white p-4">
       <h2 className="text-xl font-bold mb-4">Family Calendar</h2>
 
-      {/* Legend */}
       <FamilyLegend members={members} progress={progress} />
 
       <div className="bg-white rounded-lg shadow relative">
