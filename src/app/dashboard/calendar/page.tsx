@@ -114,11 +114,10 @@ export default function FamilyCalendarPage() {
     setProgress(eventProgress);
   }, [user?.familyId]);
 
-  const eventStyleGetter = (event: Event) => {
-    const backgroundColor = event.color || '#3B82F6';
+  const eventStyleGetter = () => {
     return {
       style: {
-        backgroundColor,
+        backgroundColor: '#3B82F6',
         borderRadius: '6px',
         color: '#fff',
         border: 'none',
@@ -149,7 +148,7 @@ export default function FamilyCalendarPage() {
           style={{ height: '80vh' }}
           popup
           toolbar
-          onSelectEvent={(event) => setSelectedEvent(event)}
+          onSelectEvent={(event) => setSelectedEvent(event as Event)}
           eventPropGetter={eventStyleGetter}
         />
 
