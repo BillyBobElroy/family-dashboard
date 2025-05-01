@@ -1,15 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useFirebaseUser } from '@/hook/useFirebaseUser';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { ChevronLeft, ChevronRight, Eye, EyeOff } from 'lucide-react';
 
 export function Navbar() {
   const pathname = usePathname();
   const { user } = useFirebaseUser();
   const [hideCompleted, setHideCompleted] = useState(false);
+  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
 
   const isLoggedIn = !!user;
   const isDashboard = pathname.startsWith('/dashboard');
@@ -19,6 +22,16 @@ export function Navbar() {
   const isTasks = pathname.includes('/tasks');
 
   const familyName = user?.familyName || 'Your';
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      if (!user?.familyId) return;
+      const snap = await getDocs(collection(db, `families/${user.familyId}/members`));
+      const members = snap.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
+      setFamilyMembers(members);
+    };
+    fetchMembers();
+  }, [user?.familyId]);
 
   return (
     <nav className="bg-white border-b shadow-sm px-6 py-4 flex justify-between items-center">
@@ -52,13 +65,13 @@ export function Navbar() {
 
           {/* Family avatars */}
           <div className="flex gap-1">
-            {/* Replace these with actual avatars */}
-            {[1, 2, 3].map((id) => (
+            {familyMembers.map((member) => (
               <div
-                key={id}
-                className="w-7 h-7 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center"
+                key={member.id}
+                className="w-7 h-7 rounded-full text-white text-xs flex items-center justify-center"
+                style={{ backgroundColor: member.color || '#3B82F6' }}
               >
-                {id}
+                {member.displayName?.charAt(0).toUpperCase() || '?'}
               </div>
             ))}
           </div>
@@ -78,17 +91,17 @@ export function Navbar() {
                 className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800"
               >
                 {hideCompleted ? (
-              <>
-                <EyeOff className="w-4 h-4" />
-              Show Completed
-    </>
-  ) : (
-    <>
-      <Eye className="w-4 h-4" />
-      Hide Completed
-    </>
-  )}
-</button>
+                  <>
+                    <EyeOff className="w-4 h-4" />
+                    Show Completed
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-4 h-4" />
+                    Hide Completed
+                  </>
+                )}
+              </button>
               <div className="flex items-center gap-1">
                 <button className="p-1 hover:bg-gray-200 rounded">
                   <ChevronLeft className="w-4 h-4" />
