@@ -23,7 +23,8 @@ type Invite = {
 };
 
 export default function JoinFamilyPage() {
-  const { inviteId } = useParams() as { inviteId: string };
+  const params = useParams();
+  const inviteId = typeof params?.inviteId === 'string' ? params.inviteId : Array.isArray(params?.inviteId) ? params?.inviteId[0] : '';
   const router = useRouter();
   const { user, loading } = useFirebaseUser();
 
@@ -70,19 +71,16 @@ export default function JoinFamilyPage() {
     try {
       const { familyId } = invite;
 
-      // Add user to the family members collection
       await setDoc(doc(db, `families/${familyId}/members/${user.uid}`), {
         role: 'member',
         displayName: user.displayName || 'Unnamed',
         color: getRandomColor(),
       });
 
-      // Update user profile with familyId
       await updateDoc(doc(db, `users/${user.uid}`), {
         familyId,
       });
 
-      // Delete invite
       await deleteDoc(doc(db, 'invites', inviteId));
 
       router.push('/dashboard');
