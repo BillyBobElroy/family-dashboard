@@ -7,7 +7,7 @@ import { useFirebaseUser } from '@/hook/useFirebaseUser';
 import { AddTaskModal } from '@/components/tasks/AddTaskModal';
 import { EditTaskModal } from '@/components/tasks/EditTaskModal';
 import { formatDistanceToNowStrict, isBefore } from 'date-fns';
-import type { Task, ChecklistItem } from '@/types/task';
+import type { Task } from '@/types/task';
 
 type Member = {
   id: string;
