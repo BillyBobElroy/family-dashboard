@@ -8,11 +8,17 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ChevronLeft, ChevronRight, Eye, EyeOff } from 'lucide-react';
 
+type Member = {
+  id: string;
+  displayName: string;
+  color?: string;
+};
+
 export function Navbar() {
   const pathname = usePathname();
   const { user } = useFirebaseUser();
   const [hideCompleted, setHideCompleted] = useState(false);
-  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
+  const [familyMembers, setFamilyMembers] = useState<Member[]>([]);
 
   const isLoggedIn = !!user;
   const isDashboard = pathname.startsWith('/dashboard');
@@ -27,7 +33,10 @@ export function Navbar() {
     const fetchMembers = async () => {
       if (!user?.familyId) return;
       const snap = await getDocs(collection(db, `families/${user.familyId}/members`));
-      const members = snap.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
+      const members: Member[] = snap.docs.map(doc => ({
+        id: doc.id,
+        ...(doc.data() as Omit<Member, 'id'>),
+      }));
       setFamilyMembers(members);
     };
     fetchMembers();
@@ -55,15 +64,13 @@ export function Navbar() {
       )}
 
       {isDashboard && isLoggedIn && (
-        <div className="flex items-center gap-6">
-          <div className="text-sm font-medium text-gray-700">
+        <div className="flex items-left gap-6">
+          <div className="text-xl font-bold text-blue-800">
             {familyName} Family
           </div>
 
-          {/* Weather placeholder */}
           <div className="text-xs text-gray-500">72°F & Sunny</div>
 
-          {/* Family avatars */}
           <div className="flex gap-1">
             {familyMembers.map((member) => (
               <div
