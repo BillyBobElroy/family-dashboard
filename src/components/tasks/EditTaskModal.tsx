@@ -6,10 +6,23 @@ import { useFirebaseUser } from '@/hook/useFirebaseUser';
 import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { nanoid } from 'nanoid';
 
-type Props = {
-  task: any;
-  onClose: () => void;
-  onTaskUpdated: () => void;
+type ChecklistItem = {
+  id: string;
+  text: string;
+  done: boolean;
+};
+
+type Task = {
+  id: string;
+  title: string;
+  assignedTo: string;
+  dueDate: string;
+  time?: string;
+  repeat?: 'none' | 'daily' | 'weekly' | null;
+  priority?: 'low' | 'medium' | 'high';
+  category?: string;
+  notes?: string;
+  checklist?: ChecklistItem[];
 };
 
 type Member = {
@@ -17,17 +30,24 @@ type Member = {
   displayName: string;
 };
 
+type Props = {
+  task: Task;
+  onClose: () => void;
+  onTaskUpdated: () => void;
+};
+
 export function EditTaskModal({ task, onClose, onTaskUpdated }: Props) {
   const { user } = useFirebaseUser();
+
   const [title, setTitle] = useState(task.title);
   const [assignedTo, setAssignedTo] = useState(task.assignedTo);
   const [dueDate, setDueDate] = useState(task.dueDate);
   const [time, setTime] = useState(task.time || '');
-  const [repeat, setRepeat] = useState(task.repeat || 'none');
-  const [priority, setPriority] = useState(task.priority || 'medium');
+  const [repeat, setRepeat] = useState<Task['repeat']>(task.repeat || 'none');
+  const [priority, setPriority] = useState<Task['priority']>(task.priority || 'medium');
   const [category, setCategory] = useState(task.category || '');
   const [notes, setNotes] = useState(task.notes || '');
-  const [checklist, setChecklist] = useState<{ id: string; text: string; done: boolean }[]>(task.checklist || []);
+  const [checklist, setChecklist] = useState<ChecklistItem[]>(task.checklist || []);
   const [members, setMembers] = useState<Member[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -136,8 +156,8 @@ export function EditTaskModal({ task, onClose, onTaskUpdated }: Props) {
         </div>
 
         <select
-          value={repeat}
-          onChange={e => setRepeat(e.target.value)}
+          value={repeat || 'none'}
+          onChange={e => setRepeat(e.target.value as Task['repeat'])}
           className="w-full border rounded px-3 py-2"
         >
           <option value="none">No Repeat</option>
@@ -147,7 +167,7 @@ export function EditTaskModal({ task, onClose, onTaskUpdated }: Props) {
 
         <select
           value={priority}
-          onChange={e => setPriority(e.target.value)}
+          onChange={e => setPriority(e.target.value as Task['priority'])}
           className="w-full border rounded px-3 py-2"
         >
           <option value="low">🟢 Low</option>
@@ -178,7 +198,7 @@ export function EditTaskModal({ task, onClose, onTaskUpdated }: Props) {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium">Checklist</label>
-          {checklist.map((item, index) => (
+          {checklist.map((item) => (
             <div key={item.id} className="flex items-center gap-2">
               <input
                 type="text"
