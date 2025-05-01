@@ -44,9 +44,11 @@ export function Navbar() {
 
   return (
     <nav className="bg-white border-b shadow-sm px-6 py-4 flex justify-between items-center">
-      <Link href="/" className="text-xl font-bold text-blue-600">
-        FamilyDash
-      </Link>
+      {isDashboard && isLoggedIn && (
+        <div className="flex items-left gap-6">
+          <div className="text-xl font-bold text-blue-800">
+            {familyName} Family
+          </div>
 
       {isLanding && !isLoggedIn && (
         <div className="flex gap-4">
@@ -62,12 +64,6 @@ export function Navbar() {
       {isAuth && (
         <p className="text-sm text-gray-500">Welcome to FamilyDash</p>
       )}
-
-      {isDashboard && isLoggedIn && (
-        <div className="flex items-left gap-6">
-          <div className="text-xl font-bold text-blue-800">
-            {familyName} Family
-          </div>
 
           <div className="text-xs text-gray-500">72°F & Sunny</div>
 
@@ -120,13 +116,6 @@ export function Navbar() {
               </div>
             </div>
           )}
-
-          <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">
-            Dashboard
-          </Link>
-          <Link href="/account" className="text-sm text-blue-600 hover:underline">
-            Account
-          </Link>
         </div>
       )}
     </nav>
