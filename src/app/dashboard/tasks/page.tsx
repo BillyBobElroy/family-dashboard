@@ -5,32 +5,14 @@ import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useFirebaseUser } from '@/hook/useFirebaseUser';
 import { AddTaskModal } from '@/components/tasks/AddTaskModal';
+import { EditTaskModal } from '@/components/tasks/EditTaskModal';
 import { formatDistanceToNowStrict, isBefore } from 'date-fns';
+import type { Task, ChecklistItem } from '@/types/task';
 
 type Member = {
   id: string;
   displayName: string;
   color?: string;
-};
-
-type ChecklistItem = {
-  id: string;
-  text: string;
-  checked: boolean;
-};
-
-type Task = {
-  id: string;
-  title: string;
-  assignedTo: string;
-  time?: string;
-  repeat?: string;
-  completed: boolean;
-  dueDate: string;
-  category?: string;
-  priority?: 'low' | 'medium' | 'high';
-  checklist?: ChecklistItem[];
-  notes?: string;
 };
 
 type MemberProgress = {
@@ -54,6 +36,7 @@ export default function TaskDashboardPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [progress, setProgress] = useState<MemberProgress>({});
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [hideCompleted, setHideCompleted] = useState(false);
   const [expandedNotes, setExpandedNotes] = useState<{ [taskId: string]: boolean }>({});
 
@@ -175,75 +158,82 @@ export default function TaskDashboardPage() {
                   const checkedCount = checklist.filter(item => item.checked).length;
 
                   return (
-                    <div
+                    <button
                       key={task.id}
-                      className="bg-gray-50 border rounded px-3 py-2 flex flex-col gap-1"
+                      onClick={() => setSelectedTask(task)}
+                      className="w-full text-left"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className={`w-2.5 h-2.5 rounded-full ${priorityDot}`} />
-                          <p className="font-medium text-sm">{task.title}</p>
+                      <div className="bg-gray-50 border rounded px-3 py-2 flex flex-col gap-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className={`w-2.5 h-2.5 rounded-full ${priorityDot}`} />
+                            <p className="font-medium text-sm">{task.title}</p>
+                          </div>
+                          <input
+                            type="checkbox"
+                            checked={task.completed}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              toggleTaskComplete(task);
+                            }}
+                            className="w-4 h-4"
+                          />
                         </div>
-                        <input
-                          type="checkbox"
-                          checked={task.completed}
-                          onChange={() => toggleTaskComplete(task)}
-                          className="w-4 h-4"
-                        />
-                      </div>
 
-                      <div className="text-xs text-gray-600 flex justify-between items-center">
-                        <span>
-                          {task.time && new Date(`1970-01-01T${task.time}`).toLocaleTimeString([], {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true,
-                          })}
-                          {task.repeat && ` • ${task.repeat}`}
-                        </span>
-                        {overdue && (
-                          <span className="text-red-500 font-medium">
-                            {formatDistanceToNowStrict(
-                              new Date(`${task.dueDate}T${task.time}`),
-                              { addSuffix: true }
-                            )}
+                        <div className="text-xs text-gray-600 flex justify-between items-center">
+                          <span>
+                            {task.time && new Date(`1970-01-01T${task.time}`).toLocaleTimeString([], {
+                              hour: 'numeric',
+                              minute: '2-digit',
+                              hour12: true,
+                            })}
+                            {task.repeat && ` • ${task.repeat}`}
                           </span>
-                        )}
-                      </div>
-
-                      {task.category && categoryLabels[task.category] && (
-                        <span className="inline-block mt-1 text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 w-fit">
-                          {categoryLabels[task.category]}
-                        </span>
-                      )}
-
-                      {checklist.length > 0 && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          ✅ {checkedCount}/{checklist.length} checklist items complete
-                        </p>
-                      )}
-
-                      {task.notes && (
-                        <div className="text-xs text-gray-700 mt-1">
-                          <button
-                            onClick={() =>
-                              setExpandedNotes(prev => ({
-                                ...prev,
-                                [task.id]: !prev[task.id],
-                              }))
-                            }
-                            className="text-blue-500 hover:underline mb-1"
-                          >
-                            {expandedNotes[task.id] ? 'Hide Notes' : 'Show Notes'}
-                          </button>
-                          {expandedNotes[task.id] && (
-                            <div className="bg-white p-2 border rounded text-sm whitespace-pre-wrap">
-                              {task.notes}
-                            </div>
+                          {overdue && (
+                            <span className="text-red-500 font-medium">
+                              {formatDistanceToNowStrict(
+                                new Date(`${task.dueDate}T${task.time}`),
+                                { addSuffix: true }
+                              )}
+                            </span>
                           )}
                         </div>
-                      )}
-                    </div>
+
+                        {task.category && categoryLabels[task.category] && (
+                          <span className="inline-block mt-1 text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 w-fit">
+                            {categoryLabels[task.category]}
+                          </span>
+                        )}
+
+                        {checklist.length > 0 && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            ✅ {checkedCount}/{checklist.length} checklist items complete
+                          </p>
+                        )}
+
+                        {task.notes && (
+                          <div className="text-xs text-gray-700 mt-1">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedNotes(prev => ({
+                                  ...prev,
+                                  [task.id]: !prev[task.id],
+                                }));
+                              }}
+                              className="text-blue-500 hover:underline mb-1"
+                            >
+                              {expandedNotes[task.id] ? 'Hide Notes' : 'Show Notes'}
+                            </button>
+                            {expandedNotes[task.id] && (
+                              <div className="bg-white p-2 border rounded text-sm whitespace-pre-wrap">
+                                {task.notes}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </button>
                   );
                 })}
               </div>
@@ -264,6 +254,14 @@ export default function TaskDashboardPage() {
         <AddTaskModal
           onClose={() => setShowAddModal(false)}
           onTaskAdded={loadData}
+        />
+      )}
+
+      {selectedTask && (
+        <EditTaskModal
+          task={selectedTask}
+          onClose={() => setSelectedTask(null)}
+          onTaskUpdated={loadData}
         />
       )}
     </div>

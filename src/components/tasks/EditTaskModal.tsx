@@ -5,25 +5,7 @@ import { db } from '@/lib/firebase';
 import { useFirebaseUser } from '@/hook/useFirebaseUser';
 import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { nanoid } from 'nanoid';
-
-type ChecklistItem = {
-  id: string;
-  text: string;
-  done: boolean;
-};
-
-type Task = {
-  id: string;
-  title: string;
-  assignedTo: string;
-  dueDate: string;
-  time?: string;
-  repeat?: 'none' | 'daily' | 'weekly' | null;
-  priority?: 'low' | 'medium' | 'high';
-  category?: string;
-  notes?: string;
-  checklist?: ChecklistItem[];
-};
+import type { Task, ChecklistItem } from '@/types/task';
 
 type Member = {
   id: string;
@@ -69,7 +51,7 @@ export function EditTaskModal({ task, onClose, onTaskUpdated }: Props) {
   };
 
   const handleAddChecklistItem = () => {
-    setChecklist(prev => [...prev, { id: nanoid(), text: '', done: false }]);
+    setChecklist(prev => [...prev, { id: nanoid(), text: '', checked: false }]);
   };
 
   const handleRemoveChecklistItem = (id: string) => {
