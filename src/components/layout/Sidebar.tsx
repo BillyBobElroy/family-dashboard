@@ -13,7 +13,7 @@ import {
 const navItems = [
   { href: '/dashboard/calendar', label: 'Calendar', icon: CalendarDays },
   { href: '/dashboard/tasks', label: 'Tasks', icon: CheckCircle },
-  //{ href: '/dashboard/rewards', label: 'Rewards', icon: Star },
+  { href: '/dashboard/rewards', label: 'Rewards', icon: Star },
   { href: '/dashboard/meals', label: 'Meals', icon: Utensils },
   { href: '/dashboard/photos', label: 'Photos', icon: ImageIcon },
   { href: '/dashboard/lists', label: 'Lists', icon: ListTodo },
