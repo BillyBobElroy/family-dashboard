@@ -40,7 +40,6 @@ export default function ListsPage() {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [newItemText, setNewItemText] = useState<{ [listId: string]: string }>({});
-  const [expanded, setExpanded] = useState<{ [listId: string]: boolean }>({});
 
   const loadLists = useCallback(async () => {
     if (!user?.familyId) return;
@@ -186,132 +185,78 @@ export default function ListsPage() {
                     ref={provided.innerRef}
                     className="flex flex-wrap gap-4"
                   >
-                    {listsByMember[member.id]?.map((list, index) => {
-                      const activeItems = list.items.filter(i => !i.checked);
-                      const completedItems = list.items.filter(i => i.checked);
-                      const isExpanded = expanded[list.id];
-                      const itemsToShow = isExpanded ? activeItems : activeItems.slice(0, 2);
-
-                      return (
-                        <Draggable key={list.id} draggableId={list.id} index={index}>
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className="p-4 rounded-xl shadow space-y-3 w-full sm:w-[300px]"
-                              style={{
-                                backgroundColor: member.color || '#F9FAFB',
-                                ...provided.draggableProps.style,
-                              }}
-                            >
-                              <div className="flex justify-between items-center">
-                                <h4 className="font-semibold text-lg text-white">{list.title}</h4>
-                                <button
-                                  onClick={() => handleDeleteList(list.id)}
-                                  className="text-white/80 hover:text-white text-lg"
-                                >
-                                  &times;
-                                </button>
-                              </div>
-
-                              <ul className="space-y-2">
-                                {itemsToShow.map(item => (
-                                  <li key={item.id} className="flex items-center gap-3">
-                                    <input
-                                      type="checkbox"
-                                      checked={item.checked}
-                                      onChange={() => handleToggle(list.id, item.id)}
-                                      className="w-5 h-5 accent-white bg-white/30 rounded"
-                                    />
-                                    <input
-                                      type="text"
-                                      value={item.text}
-                                      onChange={(e) => handleTextChange(list.id, item.id, e.target.value)}
-                                      onBlur={() => handleItemBlur(list.id)}
-                                      className="flex-grow text-sm bg-transparent border-none text-white placeholder-white/80 focus:outline-none"
-                                    />
-                                    <button
-                                      onClick={() => handleDeleteItem(list.id, item.id)}
-                                      className="text-white/70 hover:text-red-200 text-lg"
-                                    >
-                                      &times;
-                                    </button>
-                                  </li>
-                                ))}
-                              </ul>
-
-                              {!isExpanded && activeItems.length > 2 && (
-                                <button
-                                  onClick={() => setExpanded(prev => ({ ...prev, [list.id]: true }))}
-                                  className="text-sm text-white/80 hover:underline"
-                                >
-                                  Show All
-                                </button>
-                              )}
-
-                              {isExpanded && activeItems.length > 2 && (
-                                <button
-                                  onClick={() => setExpanded(prev => ({ ...prev, [list.id]: false }))}
-                                  className="text-sm text-white/80 hover:underline"
-                                >
-                                  Collapse
-                                </button>
-                              )}
-
-                              {completedItems.length > 0 && (
-                                <>
-                                  <p className="mt-3 text-xs text-white/60 uppercase font-semibold">Completed</p>
-                                  <ul className="space-y-2 mt-1">
-                                    {completedItems.map(item => (
-                                      <li key={item.id} className="flex items-center gap-3 opacity-70">
-                                        <input
-                                          type="checkbox"
-                                          checked={item.checked}
-                                          onChange={() => handleToggle(list.id, item.id)}
-                                          className="w-5 h-5 accent-white bg-white/30 rounded"
-                                        />
-                                        <input
-                                          type="text"
-                                          value={item.text}
-                                          onChange={(e) => handleTextChange(list.id, item.id, e.target.value)}
-                                          onBlur={() => handleItemBlur(list.id)}
-                                          className="flex-grow text-sm bg-transparent border-none text-white line-through placeholder-white/80 focus:outline-none"
-                                        />
-                                        <button
-                                          onClick={() => handleDeleteItem(list.id, item.id)}
-                                          className="text-white/60 hover:text-red-300 text-lg"
-                                        >
-                                          &times;
-                                        </button>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </>
-                              )}
-
-                              <div className="flex gap-2 mt-2">
-                                <input
-                                  type="text"
-                                  value={newItemText[list.id] || ''}
-                                  onChange={(e) =>
-                                    setNewItemText(prev => ({ ...prev, [list.id]: e.target.value }))
-                                  }
-                                  placeholder="New item..."
-                                  className="flex-grow border px-3 py-1 rounded text-sm"
-                                />
-                                <button
-                                  onClick={() => handleAddItem(list.id)}
-                                  className="bg-white text-black px-3 py-1 rounded hover:bg-gray-200"
-                                >
-                                  Add
-                                </button>
-                              </div>
+                    {listsByMember[member.id]?.map((list, index) => (
+                      <Draggable key={list.id} draggableId={list.id} index={index}>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className="p-4 rounded-xl shadow space-y-3 w-full sm:w-[300px]"
+                            style={{
+                              backgroundColor: member.color || '#F9FAFB',
+                              ...provided.draggableProps.style,
+                            }}
+                          >
+                            <div className="flex justify-between items-center">
+                              <h4 className="font-semibold text-lg text-white">{list.title}</h4>
+                              <button
+                                onClick={() => handleDeleteList(list.id)}
+                                className="text-white/80 hover:text-white text-lg"
+                              >
+                                &times;
+                              </button>
                             </div>
-                          )}
-                        </Draggable>
-                      );
-                    })}
+
+                            <ul className="space-y-2">
+                              {list.items.map(item => (
+                                <li key={item.id} className={`flex items-center gap-3 ${item.checked ? 'opacity-70' : ''}`}>
+                                  <input
+                                    type="checkbox"
+                                    checked={item.checked}
+                                    onChange={() => handleToggle(list.id, item.id)}
+                                    className="w-5 h-5 accent-white bg-white/30 rounded"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={item.text}
+                                    onChange={(e) => handleTextChange(list.id, item.id, e.target.value)}
+                                    onBlur={() => handleItemBlur(list.id)}
+                                    className={`flex-grow text-sm bg-transparent border-none text-white placeholder-white/80 focus:outline-none ${
+                                      item.checked ? 'line-through' : ''
+                                    }`}
+                                  />
+                                  <button
+                                    onClick={() => handleDeleteItem(list.id, item.id)}
+                                    className="text-white/70 hover:text-red-200 text-lg"
+                                  >
+                                    &times;
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+
+                            <div className="flex gap-2 mt-2">
+                              <input
+                                type="text"
+                                value={newItemText[list.id] || ''}
+                                onChange={(e) =>
+                                  setNewItemText(prev => ({ ...prev, [list.id]: e.target.value }))
+                                }
+                                placeholder="New item..."
+                                className="flex-grow border px-3 py-1 rounded text-sm"
+                              />
+                              <button
+                                onClick={() => handleAddItem(list.id)}
+                                className="bg-white text-black px-3 py-1 rounded hover:bg-gray-200"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
                     {provided.placeholder}
                   </div>
                 )}
