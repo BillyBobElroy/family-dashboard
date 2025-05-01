@@ -114,10 +114,10 @@ export default function FamilyCalendarPage() {
     setProgress(eventProgress);
   }, [user?.familyId]);
 
-  const eventStyleGetter = () => {
+  const eventStyleGetter = (event: Event) => {
     return {
       style: {
-        backgroundColor: '#3B82F6',
+        backgroundColor: event.color || '#3B82F6',
         borderRadius: '6px',
         color: '#fff',
         border: 'none',
