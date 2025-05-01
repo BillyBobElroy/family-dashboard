@@ -30,10 +30,10 @@ export function EditTaskModal({ task, onClose, onTaskUpdated }: Props) {
   const [category, setCategory] = useState(task.category || '');
   const [notes, setNotes] = useState(task.notes || '');
   const [checklist, setChecklist] = useState<ChecklistItem[]>(
-    (task.checklist || []).map(item => ({
+    (task.checklist as ChecklistItem[] || []).map(item => ({
       id: item.id,
       text: item.text,
-      checked: (item as any).checked ?? (item as any).done ?? false,
+      checked: item.checked ?? item.done ?? false,
     }))
   );
   const [members, setMembers] = useState<Member[]>([]);

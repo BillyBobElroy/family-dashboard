@@ -3,6 +3,7 @@ export type ChecklistItem = {
     id: string;
     text: string;
     checked: boolean; // ✅ unified key name
+    done?: boolean;
   };
   
   export type Task = {
