@@ -41,6 +41,7 @@ export default function ListsPage() {
   const [loading, setLoading] = useState(true);
   const [newItemText, setNewItemText] = useState<{ [listId: string]: string }>({});
   const [expanded, setExpanded] = useState<{ [listId: string]: boolean }>({});
+  const [hideCompleted, setHideCompleted] = useState(false);
 
   const loadLists = useCallback(async () => {
     if (!user?.familyId) return;
@@ -259,36 +260,36 @@ export default function ListsPage() {
                                 </button>
                               )}
 
-                              {completedItems.length > 0 && (
-                                <>
-                                  <p className="mt-3 text-xs text-white/60 uppercase font-semibold">Completed</p>
-                                  <ul className="space-y-2 mt-1">
-                                    {completedItems.map(item => (
-                                      <li key={item.id} className="flex items-center gap-3 opacity-70">
-                                        <input
-                                          type="checkbox"
-                                          checked={item.checked}
-                                          onChange={() => handleToggle(list.id, item.id)}
-                                          className="w-5 h-5 accent-white bg-white/30 rounded"
-                                        />
-                                        <input
-                                          type="text"
-                                          value={item.text}
-                                          onChange={(e) => handleTextChange(list.id, item.id, e.target.value)}
-                                          onBlur={() => handleItemBlur(list.id)}
-                                          className="flex-grow text-sm bg-transparent border-none text-white line-through placeholder-white/80 focus:outline-none"
-                                        />
-                                        <button
-                                          onClick={() => handleDeleteItem(list.id, item.id)}
-                                          className="text-white/60 hover:text-red-300 text-lg"
-                                        >
-                                          &times;
-                                        </button>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </>
-                              )}
+{!hideCompleted && completedItems.length > 0 && (
+  <>
+    <p className="mt-3 text-xs text-white/60 uppercase font-semibold">Completed</p>
+    <ul className="space-y-2 mt-1">
+      {completedItems.map(item => (
+        <li key={item.id} className="flex items-center gap-3 opacity-70">
+          <input
+            type="checkbox"
+            checked={item.checked}
+            onChange={() => handleToggle(list.id, item.id)}
+            className="w-5 h-5 accent-white bg-white/30 rounded"
+          />
+          <input
+            type="text"
+            value={item.text}
+            onChange={(e) => handleTextChange(list.id, item.id, e.target.value)}
+            onBlur={() => handleItemBlur(list.id)}
+            className="flex-grow text-sm bg-transparent border-none text-white line-through placeholder-white/80 focus:outline-none"
+          />
+          <button
+            onClick={() => handleDeleteItem(list.id, item.id)}
+            className="text-white/60 hover:text-red-300 text-lg"
+          >
+            &times;
+          </button>
+        </li>
+      ))}
+    </ul>
+  </>
+)}
 
                               <div className="flex gap-2 mt-2">
                                 <input
