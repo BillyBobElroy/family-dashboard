@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useFirebaseUser } from '@/hook/useFirebaseUser';
@@ -8,6 +9,7 @@ import { ChevronLeft, ChevronRight, Eye, EyeOff } from 'lucide-react';
 export function Navbar() {
   const pathname = usePathname();
   const { user } = useFirebaseUser();
+  const [hideCompleted, setHideCompleted] = useState(false);
 
   const isLoggedIn = !!user;
   const isDashboard = pathname.startsWith('/dashboard');
@@ -71,9 +73,22 @@ export function Navbar() {
 
           {isTasks && (
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-1 text-sm text-gray-700 hover:underline">
-                <Eye className="w-4 h-4" /> Hide Completed
-              </button>
+              <button
+                onClick={() => setHideCompleted(prev => !prev)}
+                className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800"
+              >
+                {hideCompleted ? (
+              <>
+                <EyeOff className="w-4 h-4" />
+              Show Completed
+    </>
+  ) : (
+    <>
+      <Eye className="w-4 h-4" />
+      Hide Completed
+    </>
+  )}
+</button>
               <div className="flex items-center gap-1">
                 <button className="p-1 hover:bg-gray-200 rounded">
                   <ChevronLeft className="w-4 h-4" />
