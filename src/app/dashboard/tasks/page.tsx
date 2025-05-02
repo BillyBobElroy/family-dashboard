@@ -161,57 +161,57 @@ export default function TaskDashboardPage() {
                 const checkedCount = checklist.filter(item => item.checked).length;
 
                 return (
-                  <button
+                  <div
                     key={task.id}
-                    onClick={() => setSelectedTask(task)}
-                    className="w-full text-left group"
+                    className="bg-gray-50 border rounded px-3 py-2 flex flex-col gap-1"
                   >
-                    <div key={task.id} className="bg-gray-50 border rounded px-3 py-2 flex flex-col gap-1">
-  <div className="flex items-center justify-between">
-    <div className="flex items-center gap-2 cursor-pointer" onClick={() => setSelectedTask(task)}>
-      <span className={`w-2.5 h-2.5 rounded-full ${priorityDot}`} />
-      <p className="font-medium text-sm">{task.title}</p>
-    </div>
-    <input
-      type="checkbox"
-      checked={task.completed}
-      onChange={() => toggleTaskComplete(task)}
-      className="w-4 h-4 accent-blue-500"
-    />
-  </div>
-
-                      <div className="text-xs text-gray-600 flex justify-between items-center">
-                        <span>
-                          {task.time && new Date(`1970-01-01T${task.time}`).toLocaleTimeString([], {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true,
-                          })}
-                          {task.repeat && ` • ${task.repeat}`}
-                        </span>
-                        {overdue && (
-                          <span className="text-red-500 font-medium">
-                            {formatDistanceToNowStrict(
-                              new Date(`${task.dueDate}T${task.time}`),
-                              { addSuffix: true }
-                            )}
-                          </span>
-                        )}
+                    <div className="flex items-center justify-between">
+                      <div
+                        className="flex items-center gap-2 cursor-pointer"
+                        onClick={() => setSelectedTask(task)}
+                      >
+                        <span className={`w-2.5 h-2.5 rounded-full ${priorityDot}`} />
+                        <p className="font-medium text-sm">{task.title}</p>
                       </div>
+                      <input
+                        type="checkbox"
+                        checked={task.completed}
+                        onChange={() => toggleTaskComplete(task)}
+                        className="w-4 h-4 accent-blue-500"
+                      />
+                    </div>
 
-                      {task.category && categoryLabels[task.category] && (
-                        <span className="text-xs text-gray-500 mt-1">
-                          {categoryLabels[task.category]}
+                    <div className="text-xs text-gray-600 flex justify-between items-center">
+                      <span>
+                        {task.time && new Date(`1970-01-01T${task.time}`).toLocaleTimeString([], {
+                          hour: 'numeric',
+                          minute: '2-digit',
+                          hour12: true,
+                        })}
+                        {task.repeat && ` • ${task.repeat}`}
+                      </span>
+                      {overdue && (
+                        <span className="text-red-500 font-medium">
+                          {formatDistanceToNowStrict(
+                            new Date(`${task.dueDate}T${task.time}`),
+                            { addSuffix: true }
+                          )}
                         </span>
-                      )}
-
-                      {checklist.length > 0 && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          ✅ {checkedCount}/{checklist.length} complete
-                        </p>
                       )}
                     </div>
-                  </button>
+
+                    {task.category && categoryLabels[task.category] && (
+                      <span className="text-xs text-gray-500 mt-1">
+                        {categoryLabels[task.category]}
+                      </span>
+                    )}
+
+                    {checklist.length > 0 && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        ✅ {checkedCount}/{checklist.length} complete
+                      </p>
+                    )}
+                  </div>
                 );
               })}
             </div>
