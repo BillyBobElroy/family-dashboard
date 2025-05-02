@@ -38,7 +38,6 @@ export default function TaskDashboardPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [hideCompleted, setHideCompleted] = useState(false);
-  const [expandedNotes, setExpandedNotes] = useState<{ [taskId: string]: boolean }>({});
 
   const loadData = useCallback(async () => {
     if (!user?.familyId) return;
