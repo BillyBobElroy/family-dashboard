@@ -44,80 +44,93 @@ export function Navbar() {
 
   return (
     <nav className="bg-white border-b shadow-sm px-6 py-4 flex justify-between items-center">
-      {isDashboard && isLoggedIn && (
-        <div className="flex items-left gap-6">
-          <div className="text-xl font-bold text-blue-800">
-            {familyName} Family
-          </div>
-
-      {isLanding && !isLoggedIn && (
-        <div className="flex gap-4">
-          <Link href="/auth/signin" className="text-sm text-blue-600 hover:underline">
-            Sign In
+      {/* Left Side */}
+      <div className="flex items-center gap-4">
+        {!isLoggedIn && (
+          <Link href="/" className="text-xl font-bold text-blue-600">
+            FamilyDash
           </Link>
-          <Link href="/auth/signup" className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">
-            Get Started
-          </Link>
-        </div>
-      )}
+        )}
 
-      {isAuth && (
-        <p className="text-sm text-gray-500">Welcome to FamilyDash</p>
-      )}
+        {isLoggedIn && isDashboard && (
+          <>
+            <div className="text-xl font-bold text-blue-800">
+              {familyName} Family
+            </div>
+            <div className="text-xs text-gray-500">72°F & Sunny</div>
+          </>
+        )}
+      </div>
 
-          <div className="text-xs text-gray-500">72°F & Sunny</div>
+      {/* Right Side */}
+      <div className="flex items-center gap-6">
+        {isLanding && !isLoggedIn && (
+          <>
+            <Link href="/auth/signin" className="text-sm text-blue-600 hover:underline">
+              Sign In
+            </Link>
+            <Link href="/auth/signup" className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">
+              Get Started
+            </Link>
+          </>
+        )}
 
-          <div className="flex gap-1">
-            {familyMembers.map((member) => (
-              <div
-                key={member.id}
-                className="w-7 h-7 rounded-full text-white text-xs flex items-center justify-center"
-                style={{ backgroundColor: member.color || '#3B82F6' }}
-              >
-                {member.displayName?.charAt(0).toUpperCase() || '?'}
-              </div>
-            ))}
-          </div>
+        {isAuth && (
+          <p className="text-sm text-gray-500">Welcome to FamilyDash</p>
+        )}
 
-          {isCalendar && (
-            <div>
+        {isDashboard && isLoggedIn && (
+          <>
+            <div className="flex gap-1">
+              {familyMembers.map((member) => (
+                <div
+                  key={member.id}
+                  className="w-7 h-7 rounded-full text-white text-xs flex items-center justify-center"
+                  style={{ backgroundColor: member.color || '#3B82F6' }}
+                >
+                  {member.displayName?.charAt(0).toUpperCase() || '?'}
+                </div>
+              ))}
+            </div>
+
+            {isCalendar && (
               <button className="text-sm bg-gray-100 px-3 py-1 rounded hover:bg-gray-200">
                 Schedule ▼
               </button>
-            </div>
-          )}
+            )}
 
-          {isTasks && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setHideCompleted(prev => !prev)}
-                className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800"
-              >
-                {hideCompleted ? (
-                  <>
-                    <EyeOff className="w-4 h-4" />
-                    Show Completed
-                  </>
-                ) : (
-                  <>
-                    <Eye className="w-4 h-4" />
-                    Hide Completed
-                  </>
-                )}
-              </button>
-              <div className="flex items-center gap-1">
-                <button className="p-1 hover:bg-gray-200 rounded">
-                  <ChevronLeft className="w-4 h-4" />
+            {isTasks && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setHideCompleted(prev => !prev)}
+                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800"
+                >
+                  {hideCompleted ? (
+                    <>
+                      <EyeOff className="w-4 h-4" />
+                      Show Completed
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="w-4 h-4" />
+                      Hide Completed
+                    </>
+                  )}
                 </button>
-                <span className="text-sm">Today</span>
-                <button className="p-1 hover:bg-gray-200 rounded">
-                  <ChevronRight className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button className="p-1 hover:bg-gray-200 rounded">
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <span className="text-sm">Today</span>
+                  <button className="p-1 hover:bg-gray-200 rounded">
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </>
+        )}
+      </div>
     </nav>
   );
 }
